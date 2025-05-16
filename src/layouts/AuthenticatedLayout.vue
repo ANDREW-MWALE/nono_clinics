@@ -1,0 +1,30 @@
+<template>
+    <div class="authenticated-layout">
+      <CustomNavigation />
+      <main class="content">
+        <router-view />
+      </main>
+    </div>
+  </template>
+  
+  <script>
+  import CustomNavigation from '@/components/CustomNavigation.vue'
+  
+  export default {
+    name: 'AuthenticatedLayout',
+    components: { CustomNavigation }
+  }
+  </script>
+  
+  <style scoped>
+  .authenticated-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .content {
+    flex: 1;
+    padding: 20px;
+  }
+  </style>
