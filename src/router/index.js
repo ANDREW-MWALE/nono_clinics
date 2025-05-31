@@ -11,6 +11,7 @@ const routes = [
     component: () => import('@/components/RegisterComponent.vue'),
     meta: { noLayout: true } 
   },
+
   { 
     path: '/login', 
     component: () => import('@/components/LoginComponent.vue'),
@@ -28,6 +29,13 @@ const routes = [
         component: () => import('@/views/DashboadComponent.vue'),
         meta: { title: 'Dashboard' } 
       },
+
+      //Laboratory
+{
+  path: '/laboratory',
+  name: 'Laboratory',
+  component: () => import('@/views/LaboratoryPage.vue'),
+},
 
       // Employee Management
       { 
