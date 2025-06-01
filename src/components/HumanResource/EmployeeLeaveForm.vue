@@ -5,239 +5,147 @@
     <DialogDialog 
       :isOpen="isDialogOpen" 
       @close="closeDialog"
-      @confirm="saveEmployee"
+      @confirm="submitForm"
       title="Employee Leave Days"
     >
-      <form @submit.prevent="submitForm" class="employee-form">
+      <form @submit.prevent="submitForm" class="leave-form">
         <div class="form-group">
-          <label for="fname">Employee Name*</label>
-          <input id="fname" v-model="EName" type="text" required>
+          <label for="Ename">Employee Name*</label>
+          <input id="Ename" v-model="employeeName" type="text" required>
         </div>
-
-        <div class="form-group">
-          <label for="lname">Last Name*</label>
-          <input id="lname" v-model="lname" type="text" required>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email*</label>
-          <input id="email" v-model="email" type="email" required>
-        </div>
-
-        <div class="form-group">
-          <label for="address">Number of Days*</label>
-          <input id="number" v-model="days" type="text" required>
-        </div>
-
-        <div class="form-group">
-          <label for="contact">Contact*</label>
-          <input id="contact" v-model="contact" type="text" required>
-        </div>
-
-        <div class="form-group">
-          <label for="department">Department*</label>
-          <select id="department" v-model="department" required>
-            <option value="">Select Department</option>
-            <option value="HR">Human Resources</option>
-            <option value="IT">Information Technology</option>
-            <option value="Finance">Finance</option>
-            <option value="Marketing">Marketing</option>
-          </select>
-        </div>
-
         <div class="form-group">
           <label for="position">Position*</label>
           <input id="position" v-model="position" type="text" required>
         </div>
-
         <div class="form-group">
-          <label for="etype">Employee Type*</label>
-          <select id="etype" v-model="type" required>
-            <option value="">Select Employee Type</option>
-            <option value="permanent">Permanent</option>
-            <option value="contractual">Contractual</option>
-            <option value="part-time">Part-time</option>
-          </select>
+          <label for="department">Department*</label>
+          <input id="department" v-model="department" type="text" required>
         </div>
-
         <div class="form-group">
-          <label for="startDate">Start Date*</label>
-          <input id="startDate" v-model="startDate" type="date" required>
+          <label for="number">Leave Days*</label>
+          <input id="number" v-model="leaveDaysInput" type="number" required>
         </div>
-
         <div class="form-group">
-          <label for="endDate">End Date*</label>
-          <input id="endDate" v-model="endDate" type="date" required>
+          <label for="updateby">UPDATED BY*</label>
+          <input id="updateby" v-model="upDatedBy" type="text" required>
         </div>
-
-        <div class="form-group" @click="submitForm">
+        <div class="form-group">
           <button type="submit" class="submit-btn">Submit</button>
         </div>
       </form>
     </DialogDialog>
-  </div><div>
-      <table class="table">
-  <caption>List of employees</caption>
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">FirstName</th>
-      <th scope="col">LastName</th>
-      <th scope="col">Email</th>
-      <th scope="col">Address</th>
-      <th scope="col">Contact</th>
-      <th scope="col">Department</th>
-      <th scope="col">Position</th>
-      <th scope="col">employee type</th>
-      <th scope="col">start date</th>
-      <th scope="col">end date</th>
-      <th scope="col">status</th>
-      <th scope="col">actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="(employee, index) in employees" :key="index">
-      <th scope="row">{{ employee.id }}</th>
-      <td>{{ employee.fname }}</td>
-      <td>{{ employee.lName }}</td>
-      <td>{{ employee.email }}</td>
-      <td>{{ employee.address }}</td>
-      <td>{{ employee.contact }}</td>
-      <td>{{ employee.department }}</td>
-      <td>{{ employee.position }}</td>
-      <td>{{ employee.type }}</td>
-      <td>{{ employee.start }}</td>
-      <td>{{ employee.end }}</td>
-      <td>{{ employee.status}}</td>
-      <td>
-          <div class="text-center" @click="editTask(index)">
-            <span class="fa fa-pen"></span>
-          </div>
-          <div class="text-center" @click="deleteTask(index)">
-            <span class="fa fa-trash"></span>
-          </div>
-        </td>
-    </tr>
-    <!-- <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>-->
-  </tbody>
-</table> 
-</div>
+
+    <table class="table">
+      <caption>Leave management</caption>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>EMPLOYEE NAME</th>
+          <th>POSITION</th>
+          <th>DEPARTMENT</th>
+          <th>LEAVE DAYS</th>
+          <th>UPDATED BY</th>
+          <th>ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(leave, index) in leaveDays" :key="leave.id">
+          <th scope="row">{{ leave.id }}</th>
+          <td>{{ leave.employeeName }}</td>
+          <td>{{ leave.position }}</td>
+          <td>{{ leave.department }}</td>
+          <td>{{ leave.leaveDays }}</td>
+          <td>{{ leave.upDatedBy }}</td>
+          <td>
+            <span class="fa fa-pen" @click="editLeave(index)"></span>
+            <span class="fa fa-trash" @click="deleteLeave(index)"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table> 
+  </div>
 </template>
-  
-  <script>
+
+<script>
 import DialogDialog from '@/components/DialogDialog.vue'
-import { submitForm } from '@formkit/vue';
 
 export default {
-  components: { DialogDialog},
- data() {
-  return {
-    isDialogOpen: false,
-    editingEmployee: null,
-    employees: [], // your sample data
+  components: { DialogDialog },
+  data() {
+    return {
+      isDialogOpen: false,
+      editingLeave: null,
+      leaveDays: [
+        { id: 1, employeeName: "Andrew", position: "IT Manager", department: 'IT', leaveDays: 23, upDatedBy: 'Andrew' }
+      ],
 
-    // Form fields
-    fname: '',
-    lname: '',
-    email: '',
-    address: '',
-    contact: '',
-    department: '',
-    position: '',
-    type: '',
-    startDate: '',
-    endDate: ''
-  };
-},
-methods: {
-  openDialog() {
-    this.resetForm();
-    this.isDialogOpen = true;
-  },
-  closeDialog() {
-    this.isDialogOpen = false;
-    this.resetForm();
-    this.editingEmployee = null;
-  },
-  submitForm() {
-    const newEmployee = {
-      fname: this.fname,
-      lName: this.lname,
-      email: this.email,
-      address: this.address,
-      contact: this.contact,
-      department: this.department,
-      position: this.position,
-      type: this.type,
-      start: this.startDate,
-      end: this.endDate,
-      status: "active"
+      // Form fields
+      employeeName: '',
+      position: '',
+      department: '',
+      leaveDaysInput: '',
+      upDatedBy: ''
     };
-
-    if (this.editingEmployee !== null) {
-      // Update existing employee
-      this.employees[this.editingEmployee] = {
-        ...this.employees[this.editingEmployee],
-        ...newEmployee
+  },
+  methods: {
+    openDialog() {
+      this.resetForm();
+      this.isDialogOpen = true;
+    },
+    closeDialog() {
+      this.isDialogOpen = false;
+      this.editingLeave = null;
+    },
+    resetForm() {
+      this.employeeName = '';
+      this.position = '';
+      this.department = '';
+      this.leaveDaysInput = '';
+      this.upDatedBy = '';
+    },
+    submitForm() {
+      const newLeave = {
+        employeeName: this.employeeName,
+        position: this.position,
+        department: this.department,
+        leaveDays: parseInt(this.leaveDaysInput),
+        upDatedBy: this.upDatedBy
       };
-      alert("Employee updated successfully");
-    } else {
-      // Insert new employee
-      newEmployee.id = this.employees.length + 1;
-      this.employees.push(newEmployee);
-      alert("New employee added successfully");
+
+      if (this.editingLeave !== null) {
+        newLeave.id = this.leaveDays[this.editingLeave].id;
+        this.leaveDays.splice(this.editingLeave, 1, newLeave);
+        alert("Leave record updated successfully");
+      } else {
+        newLeave.id = this.leaveDays.length + 1;
+        this.leaveDays.push(newLeave);
+        alert("New leave record added successfully");
+      }
+
+      this.closeDialog();
+    },
+    editLeave(index) {
+      const leave = this.leaveDays[index];
+      this.employeeName = leave.employeeName;
+      this.position = leave.position;
+      this.department = leave.department;
+      this.leaveDaysInput = leave.leaveDays;
+      this.upDatedBy = leave.upDatedBy;
+
+      this.editingLeave = index;
+      this.isDialogOpen = true;
+    },
+    deleteLeave(index) {
+      if (confirm("Are you sure you want to delete this record?")) {
+        this.leaveDays.splice(index, 1);
+      }
     }
-
-    this.closeDialog();
-  },
-  editTask(index) {
-    const emp = this.employees[index];
-    this.fname = emp.fname;
-    this.lname = emp.lName;
-    this.email = emp.email;
-    this.address = emp.address;
-    this.contact = emp.contact;
-    this.department = emp.department;
-    this.position = emp.position;
-    this.type = emp.type;
-    this.startDate = emp.start;
-    this.endDate = emp.end;
-
-    this.editingEmployee = index;
-    this.isDialogOpen = true;
-  },
-  deleteTask(index) {
-    this.employees.splice(index, 1);
-  },
-  resetForm() {
-    this.fname = '';
-    this.lname = '';
-    this.email = '';
-    this.address = '';
-    this.contact = '';
-    this.department = '';
-    this.position = '';
-    this.type = '';
-    this.startDate = '';
-    this.endDate = '';
   }
 }
-}
+</script>
 
-</script>  
-  <style scoped>
-  .open-dialog-btn {
+<style scoped>
+.open-dialog-btn {
   background-color: #007bff;
   color: white;
   padding: 10px 20px;
@@ -246,44 +154,19 @@ methods: {
   cursor: pointer;
   margin-bottom: 20px;
 }
-
 .open-dialog-btn:hover {
   background-color: #0056b3;
 }
-
-h2 {
-  text-align: center;
-  margin-top: 20px;
+.form-group {
+  margin-bottom: 15px;
 }
-
-.payment-category-table {
+input {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  margin: 20px;
-  position: centre;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
-
-.payment-category-table th,
-.payment-category-table td {
-  padding: 12px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-.payment-category-table th {
-  background-color: #f4f4f4;
-}
-
-.payment-category-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.payment-category-table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.submit {
+.submit-btn {
   background-color: #007bff;
   color: white;
   padding: 10px 20px;
@@ -291,20 +174,30 @@ h2 {
   border-radius: 5px;
   cursor: pointer;
 }
-
-.submit:hover {
+.submit-btn:hover {
   background-color: #0056b3;
 }
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-input {
+.table {
   width: 100%;
-  padding: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
-  </style>
-  
+.table th, .table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+.table th {
+  background-color: #f4f4f4;
+}
+.table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+.table tr:hover {
+  background-color: #f1f1f1;
+}
+.fa {
+  cursor: pointer;
+  margin: 0 5px;
+}
+</style>

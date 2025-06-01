@@ -18,6 +18,7 @@
     "bootstrap": "^5.3.6",
     "chart.js": "^4.4.9",
     "element-plus": "^2.9.9",
+    "html2pdf.js": "^0.10.3",
     "lodash.clonedeep": "^4.5.0",
     "pinia": "^2.0.28",
     "vee-validate": "^4.15.0",

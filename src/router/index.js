@@ -7,20 +7,29 @@ const routes = [
     redirect: '/login' 
   },
   { 
-    path: '/register', 
-    component: () => import('@/components/RegisterComponent.vue'),
-    meta: { noLayout: true } 
-  },
-  { 
     path: '/login', 
     component: () => import('@/components/LoginComponent.vue'),
-    meta: { noLayout: true } 
+    meta: { 
+      noLayout: true, 
+      requiresAuth: false,
+      title: 'Login'
+    } 
+  },
+  { 
+    path: '/register', 
+    component: () => import('@/components/RegisterComponent.vue'),
+    meta: { 
+      noLayout: true, 
+      requiresAuth: false,
+      title: 'Register'
+    } 
   },
 
-  // Main Layout Wrapper
+  // Main Layout Wrapper (all routes here require auth)
   {
     path: '',
     component: () => import('@/layouts/MainLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
       // Dashboard
       { 
@@ -30,25 +39,51 @@ const routes = [
       },
 
       // Employee Management
-      { 
-        path: '/employee', 
-        component: () => import('@/components/HumanResource/EmployeesPage.vue'),
-        meta: { title: 'Employees' } 
-      },
       {
-        path: '/add-employee',
-      component: () => import( '@/components/HumanResource/AddEmployeeModal.vue'),
-      meta: {title: 'Add Employee Model'}
-      },
-      {
-        path: '/hr-dashboard',
-      component: () => import( '@/components/HumanResource/HrDashboard'),
-      meta: {title: 'hr Dashboard'}
-      },
-      { 
-        path: '/staff', 
-        component: () => import('@/views/StaffComponent.vue'),
-        meta: { title: 'Staff' } 
+        path: '/hr',
+        component: () => import('@/components/HumanResource/HrLayout.vue'),
+        children: [
+          {
+            path: '/hr-dashboard',
+            component: () => import('@/components/HumanResource/HrDashboard.vue'),
+            meta: { title: 'HR Dashboard' }
+          },
+          {
+            path: '/add-employee',
+            component: () => import('@/components/HumanResource/AddEmployeeModal.vue'),
+            meta: { title: 'Add Employee' }
+          },
+          {
+            path: '/leave-days',
+            component: () => import('@/components/HumanResource/EmployeeLeaveForm.vue'),
+            meta: { title: 'Leave Days' }
+          },
+          {
+            path: '/leave-application',
+            component: () => import('@/components/HumanResource/LeaveApplication.vue'),
+            meta: { title: 'Leave Application' }
+          },
+          {
+            path: '/pay-rol',
+            component: () => import('@/components/HumanResource/EmpPayRollPage.vue'),
+            meta: { title: 'Payroll' }
+          },
+          {
+            path: '/appraisal',
+            component: () => import('@/components/HumanResource/Appraisal.vue'),
+            meta: { title: 'Appraisal' }
+          },
+          {
+            path: '/liquisition',
+            component: () => import('@/components/HumanResource/Liquisition.vue'),
+            meta: { title: 'Liquisition' }
+          },
+          {
+            path: '/staff',
+            component: () => import('@/views/StaffComponent.vue'),
+            meta: { title: 'Staff' }
+          }
+        ]
       },
 
       // Patient Management
@@ -211,7 +246,11 @@ const routes = [
   { 
     path: '/:pathMatch(.*)*', 
     component: () => import('@/views/NotFound.vue'),
-    meta: { noLayout: true, title: 'Page Not Found' } 
+    meta: { 
+      noLayout: true, 
+      title: 'Page Not Found',
+      requiresAuth: false
+    } 
   }
 ]
 
@@ -227,16 +266,32 @@ const router = createRouter({
   }
 })
 
+// Authentication guard
 router.beforeEach((to, from, next) => {
-  // Set document class based on layout requirement
-  document.body.classList.toggle('no-layout', to.meta.noLayout || false)
-  
   // Set document title
   document.title = to.meta.title 
     ? `${to.meta.title} | nono_clinics` 
     : 'nono_clinics'
+
+  // Set layout class
+  document.body.classList.toggle('no-layout', to.meta.noLayout || false)
+
+  // Check authentication
+  const isAuthenticated = localStorage.getItem('authToken')
   
-  // Add authentication check here if needed
+  // Redirect to login if route requires auth and user is not authenticated
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return next({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
+  }
+
+  // Redirect to dashboard if user is authenticated and tries to access login/register
+  if ((to.path === '/login' || to.path === '/register') && isAuthenticated) {
+    return next('/dashboard')
+  }
+
   next()
 })
 

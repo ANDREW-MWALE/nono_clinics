@@ -10,7 +10,7 @@
           <h1 class="opacity">LOGIN</h1>
 
           <form @submit.prevent="login">
-            <input v-model="username" type="text" placeholder="USERNAME" />
+            <input v-model="email" type="email" placeholder="EMAIL" />
             <input v-model="password" type="password" placeholder="PASSWORD" />
             <button type="submit" class="opacity">SUBMIT</button>
           </form>
@@ -18,8 +18,8 @@
           <p v-if="error" class="error">{{ error }}</p>
 
           <div class="register-forget opacity">
-            <a href="">REGISTER</a>
-            <a href="">FORGOT PASSWORD</a>
+            <!-- <a href="">REGISTER</a> -->
+            <!-- <a href="" @click="forgotPassword">FORGOT PASSWORD</a> -->
           </div>
         </div>
 
@@ -41,37 +41,48 @@ export default {
  // components: { CustomNavigation },
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
       error: null,
     };
   },
   methods: {
-  async login() {
-    try {
-      const response = await axios.post("http://localhost:8085/api/login", {
-        username: this.username,
-        password: this.password,
-      });
+ async login() {
+  this.error = null;
 
-      const successMessage = response.data.message || "Login successful!";
-      alert(successMessage); // Show login success message
+  try {
+    const response = await axios.post("http://localhost:8085/api/auth/login", {
+      email: this.email,
+      password: this.password,
+    });
 
-      // Save token or session info for authentication
-      localStorage.setItem("token", response.data.token);
+    // Save token
+    localStorage.setItem("authToken", response.data.token);
 
-      // Redirect to the dashboard upon successful login
-      this.$router.push("/dashboard");
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        this.error = "Invalid credentials, please try again.";
-      } else {
-        this.error = "An error occurred. Please try again later.";
-      }
+    // ✅ Save user info (like name) if present
+    localStorage.setItem("user", JSON.stringify(response.data.user));
+
+    // Success message
+    alert(response.data.message || "Login successful!");
+
+    // Redirect
+    this.$router.push("/dashboard");
+
+  } catch (error) {
+    if (error.response) {
+      this.error =
+        error.response.status === 401
+          ? "Invalid email or password"
+          : error.response.data.message || "Login failed.";
+    } else if (error.request) {
+      this.error = "Network error. Please check your connection.";
+    } else {
+      this.error = "An unexpected error occurred.";
     }
-  },
-},
+  }
+}
 
+},
 };
 </script>
 

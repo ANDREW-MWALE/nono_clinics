@@ -1,16 +1,29 @@
 <template>
   <nav class="navbar">
     <div class="nav-container">
-      <router-link 
-        v-for="link in navLinks" 
-        :key="link.path"
-        :to="link.path" 
-        class="nav-link"
-        active-class="active"
-      >
-        <i :class="link.icon"></i> 
-        <span class="link-text">{{ link.text }}</span>
-      </router-link>
+      <div class="nav-links">
+        <router-link 
+          v-for="link in navLinks" 
+          :key="link.path"
+          :to="link.path" 
+          class="nav-link"
+          active-class="active"
+        >
+          <i :class="link.icon"></i> 
+          <span class="link-text">{{ link.text }}</span>
+        </router-link>
+      </div>
+      
+      <div class="profile-section">
+        <div class="profile-info">
+          <i class="fas fa-user-circle profile-icon"></i>
+          <span class="employee-name">{{ employeeName }}</span>
+        </div>
+        <button class="logout-btn" @click="handleLogout">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
   </nav>
 </template>
@@ -27,22 +40,54 @@ export default {
         { path: '/prescription', icon: 'fas fa-prescription', text: 'Prescription' },
         { path: '/medicine-form', icon: 'fas fa-pills', text: 'Medicine' },
         { path: '/service-form', icon: 'fas fa-concierge-bell', text: 'Services' }
-      ]
+      ],
+      employeeName: '' // initially empty
+    }
+  },
+  mounted() {
+  const user = localStorage.getItem("user");
+  if (user) {
+    try {
+      this.employeeName = JSON.parse(user).name || "Unknown";
+    } catch {
+      this.employeeName = "Unknown";
+    }
+  } else {
+    this.employeeName = "Guest";
+  }
+},
+
+  methods: {
+    handleLogout() {
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      this.$router.push('/login')
     }
   }
 }
 </script>
 
+
+
 <style scoped>
 .navbar {
   background-color: #1E3A8A;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
 }
 
 .nav-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-links {
   display: flex;
 }
 
@@ -77,11 +122,58 @@ export default {
   top: 1px;
 }
 
+.profile-section {
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.profile-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.employee-name {
+  font-size: 15px;
+}
+
+.logout-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn i {
+  margin-right: 8px;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .nav-container {
-    overflow-x: auto;
+    flex-direction: column;
     padding: 0;
+  }
+  
+  .nav-links {
+    width: 100%;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
   
@@ -93,14 +185,25 @@ export default {
   .nav-link i {
     margin-right: 8px;
   }
+  
+  .profile-section {
+    width: 100%;
+    justify-content: flex-end;
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  .employee-name {
+    display: none;
+  }
 }
 
 /* Scrollbar styling for mobile */
-.nav-container::-webkit-scrollbar {
+.nav-links::-webkit-scrollbar {
   height: 4px;
 }
 
-.nav-container::-webkit-scrollbar-thumb {
+.nav-links::-webkit-scrollbar-thumb {
   background-color: rgba(255,255,255,0.2);
   border-radius: 2px;
 }

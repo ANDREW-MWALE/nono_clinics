@@ -82,7 +82,7 @@ export default {
           color: '#42b983'
         },
         { 
-          path: '/on-leave', 
+          path: '/leave-days', 
           text: 'ON LEAVE', 
           icon: 'bi bi-calendar2-minus', 
           value: '32',
