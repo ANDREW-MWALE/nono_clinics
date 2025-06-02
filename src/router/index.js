@@ -38,6 +38,13 @@ const routes = [
         meta: { title: 'Dashboard' } 
       },
 
+      // Laboratory
+      {
+        path: '/laboratory',
+        name: '/Laboratory',
+        component: () => import('@/views/LaboratoryPage.vue'),
+      },
+
       // Employee Management
       {
         path: '/hr',
