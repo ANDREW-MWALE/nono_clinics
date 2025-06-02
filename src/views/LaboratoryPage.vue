@@ -109,6 +109,7 @@ export default {
       if (confirm('Delete this result?')) {
         this.labResults.splice(index, 1);
       }
+      //download buttons not yet working 
     },
     exportExcel() {
       alert('Export to Excel (not implemented yet).');
