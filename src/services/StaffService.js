@@ -1,7 +1,7 @@
 // src/services/StaffService.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8085/api/staff';
+const API_URL = 'http://192.168.68.254/api/staff';
 
 class StaffService {
   getAllStaff() {

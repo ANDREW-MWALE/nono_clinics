@@ -76,7 +76,7 @@ export default {
       try {
         const today = moment().format('YYYY-MM-DD');
         const response = await axios.get(
-          `http://localhost:8085/api/patients/today?date=${today}`
+          `http://localhost:8085/patients/today?date=${today}`
         );
         this.todayPatients = response.data;
         this.loading = false;

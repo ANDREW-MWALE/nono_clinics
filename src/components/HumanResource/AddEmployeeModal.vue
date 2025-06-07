@@ -153,16 +153,17 @@
             >
           </div>
           
-          <div class="form-group">
-            <label>Department*</label>
-            <select v-model="department" class="form-input" required>
-              <option value="">Select Department</option>
-              <option value="HR">Human Resources</option>
-              <option value="IT">Information Technology</option>
-              <option value="Finance">Finance</option>
-              <option value="Marketing">Marketing</option>
-            </select>
-          </div>
+    <div class="form-group">
+  <label>Department*</label>
+ <select v-model="department" class="form-input" required>
+  <option disabled value="">Select Department</option>
+  <option v-for="item in departmentOptions" :key="item.id" :value="item.department">
+    {{ item.department }}
+  </option>
+</select>
+</div>
+
+
           
           <div class="form-group">
             <label>Position*</label>
@@ -175,15 +176,16 @@
             >
           </div>
           
-          <div class="form-group">
-            <label>Employee Type*</label>
-            <select v-model="type" class="form-input" required>
-              <option value="">Select Type</option>
-              <option value="permanent">Permanent</option>
-              <option value="contractual">Contractual</option>
-              <option value="part-time">Part-time</option>
-            </select>
-          </div>
+        <div class="form-group">
+  <label>Employee Type*</label>
+  <select v-model="type" class="form-input" required>
+    <option disabled value="">Select Type</option>
+    <option v-for="employee in employee" :key="employee.id" :value="employee.employeeType">
+      {{ employee.employeeType }}
+    </option>
+  </select>
+</div>
+
           
           <div class="form-group">
             <label>Start Date*</label>
@@ -227,7 +229,7 @@
             >
           </div>
           
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label>Role*</label>
             <input 
               type="text" 
@@ -236,7 +238,17 @@
               required
               placeholder="Enter role"
             >
-          </div>
+          </div>-->
+          <div class="form-group"> 
+  <label>Role*</label>
+  <select v-model="role" class="form-input" required>
+    <option disabled value="">Select Role</option>
+    <option v-for="dept in departments" :key="dept.id" :value="dept.department">
+      {{ dept.department }}
+    </option>
+  </select>
+</div>
+
         </div>
       </form>
     </DialogDialog>
@@ -268,7 +280,29 @@ export default {
       password: '',
       confirmPassword: '',
       role: '',
+    
+     // renamed to avoid conflict
+    departmentOptions: [ 
+      { id: 1, department: "Human Resource" },
+      { id: 2, department: "ICT" }
+    ],
+      departments: [ // This array will be used to populate the dropdown
+      { id: 1, department: "Human Resource" },
+      { id: 2, department: "ICT" }
+    ],
 
+     employee: [{
+        id: 1,  employeeType: "permanent"
+     },
+     {
+        id: 2, employeeType: "contractual"
+     },
+      {
+        id: 3, employeeType: "part-time"
+     }
+
+
+     ],
       // Employees fetched from backend
       employees: []
     };
@@ -380,7 +414,7 @@ export default {
     deleteTask(index) {
       if (confirm('Are you sure you want to delete this employee?')) {
         const employee = this.employees[index];
-        axios.delete(`http://localhost:8085/api/auth/${employee.id}`)
+        axios.delete(`http://localhost:8085//api/auth/${employee.id}`)
           .then(() => {
             this.employees.splice(index, 1);
           })

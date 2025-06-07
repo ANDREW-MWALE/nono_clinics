@@ -112,40 +112,6 @@
   </div>
 </div>
 </div>      
-      <!-- Rest of your form remains the same
-      <div class="form-row">
-        <div class="form-group">
-          <label for="basic">Basic Salary (ZMW)*</label>
-          <input id="basic" v-model.number="formData.basicSalary" type="number" min="0" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="allowance">Allowance (ZMW)</label>
-          <input id="allowance" v-model.number="formData.allowance" type="number" min="0" step="0.01" />
-        </div>
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="bonus">Bonus (ZMW)</label>
-          <input id="bonus" v-model.number="formData.bonus" type="number" min="0" step="0.01" />
-        </div>
-        <div class="form-group">
-          <label for="loan">Loan (ZMW)</label>
-          <input id="loan" v-model.number="formData.loan" type="number" min="0" step="0.01" />
-        </div>
-      </div>
-      
-      <div class="net-salary-display">
-        <label>NET SALARY</label>
-        <div class="net-amount">ZMW {{ formatCurrency(estimatedNetSalary) }}</div>
-      </div>
-      
-      <div class="form-actions">
-        <button type="button" @click="closeDialog" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary">{{ editingId ? 'Update' : 'Submit' }}</button>
-      </div>
-  </div> -->
-<
     <!-- Payroll Records Table -->
     <div class="payroll-records">
       <div class="table-header">
@@ -156,7 +122,7 @@
           </button>
         </div>
       </div>
-      
+     
       <div class="table-responsive">
         <div v-if="isLoading" class="loading-message">Loading payroll data...</div>
         <div v-else-if="error" class="error-message">{{ error }}</div>

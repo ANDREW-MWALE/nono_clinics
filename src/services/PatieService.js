@@ -1,7 +1,7 @@
 // src/services/PatieService.js
 import axios from "axios";
 
-const API_BASE = "http://localhost:8085/api";
+const API_BASE = "http://192.168.68.254/api";
 const PATIENTS_URL = `${API_BASE}/patients`;
 const VISITS_URL = `${API_BASE}/visits`;
 

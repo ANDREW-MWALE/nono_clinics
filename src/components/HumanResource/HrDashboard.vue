@@ -115,6 +115,13 @@ export default {
           icon: 'bi bi-calendar2-event', 
           value: '8',
           color: '#1abc9c'
+        },
+          { 
+          path: '/departments', 
+          text: 'DEPARTMENTS', 
+          icon: 'bi bi-calendar2-event', 
+          value: '8',
+          color: '#1abc9c'
         }
       ],
       charts: {

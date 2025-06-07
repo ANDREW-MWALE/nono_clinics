@@ -35,11 +35,11 @@ export default {
     return {
       navLinks: [
         { path: '/dashboard', icon: 'fas fa-tachometer-alt', text: 'Dashboard' },
-        { path: '/staff', icon: 'fas fa-users', text: 'Staff' },
-        { path: '/locations', icon: 'fas fa-map-marker-alt', text: 'Locations' },
-        { path: '/prescription', icon: 'fas fa-prescription', text: 'Prescription' },
-        { path: '/medicine-form', icon: 'fas fa-pills', text: 'Medicine' },
-        { path: '/service-form', icon: 'fas fa-concierge-bell', text: 'Services' }
+        // { path: '/staff', icon: 'fas fa-users', text: 'Staff' },
+        // { path: '/locations', icon: 'fas fa-map-marker-alt', text: 'Locations' },
+        // { path: '/prescription', icon: 'fas fa-prescription', text: 'Prescription' },
+        // { path: '/medicine-form', icon: 'fas fa-pills', text: 'Medicine' },
+        // { path: '/service-form', icon: 'fas fa-concierge-bell', text: 'Services' }
       ],
       employeeName: '' // initially empty
     }

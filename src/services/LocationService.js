@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = "http://localhost:8085/api/location";
+const API_URL = "http://192.168.68.254/api/location";
 
 class LocationService{
     getAllLocations(){

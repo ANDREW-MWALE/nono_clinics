@@ -149,7 +149,7 @@ export default {
     async fetchMedicine() {
       try {
         const response = await axios.get("http://localhost:8085/api/pharmacy/get");
-        this.medicines = response.data; // ✅ CORRECTED HERE
+        this.medicines = response.data; // CORRECTED HERE
       } catch (error) {
         console.error("Error fetching medicines:", error);
       }

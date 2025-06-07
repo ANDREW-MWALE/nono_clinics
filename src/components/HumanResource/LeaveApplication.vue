@@ -197,7 +197,7 @@
             <div class="form-group">
               <label>Leave Type</label>
               <select v-model="leaveType" class="form-input" required>
-                <option value="ANNUAL">Annual Leave</option>
+                <option value="ANNUAL">Annual leave</option>
                 <option value="SICK">Sick Leave</option>
                 <option value="MATERNITY">Maternity Leave</option>
                 <option value="PATERNITY">Paternity Leave</option>
@@ -252,9 +252,9 @@
             <div class="form-group" v-if="isHR">
               <label>Status</label>
               <select v-model="status" class="form-input">
-                <option value="PENDING">Pending</option>
-                <option value="APPROVED">Approved</option>
-                <option value="REJECTED">Rejected</option>
+                <option value="PENDING">PENDING</option>
+                <option value="APPROVED">APPROVED</option>
+                <option value="REJECTED">REJECTED</option>
               </select>
             </div>
             
@@ -438,7 +438,7 @@ export default {
         let response;
         if (this.editingIndex !== null) {
           const leaveId = this.leaves[this.editingIndex].id;
-          response = await axios.put(`http://localhost:8085/api/leaves/${leaveId}`, leaveData);
+          response = await axios.put(`http://localhost:8085/api/leaves/status/${leaveId}`, leaveData);
           this.leaves.splice(this.editingIndex, 1, response.data);
         } else {
           response = await axios.post('http://localhost:8085/api/leaves', leaveData);
@@ -554,21 +554,30 @@ export default {
       }
     },
 
-    async updateStatus(index, newStatus) {
-      this.isLoading = true;
-      try {
-        const leaveId = this.leaves[index].id;
-        const response = await axios.put(`http://localhost:8085/api/leaves/${leaveId}/status`, {
-          status: newStatus
-        });
-        this.leaves.splice(index, 1, response.data);
-      } catch (error) {
-        console.error('Error updating leave status:', error);
-        alert('Failed to update leave status');
-      } finally {
-        this.isLoading = false;
+  async updateStatus(index, newStatus) {
+  this.isLoading = true;
+  try {
+    const leaveId = this.leaves[index].id;
+    const response = await axios.put(
+      `http://localhost:8085/api/leaves/status/${leaveId}`,
+      {
+        status: newStatus,
+        updatedBy: "admin" // or get from your auth system
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       }
-    }
+    );
+    this.leaves.splice(index, 1, response.data);
+  } catch (error) {
+    console.error('Error details:', error.response); // More detailed error logging
+    alert(`Failed to update leave status: ${error.response?.data?.message || error.message}`);
+  } finally {
+    this.isLoading = false;
+  }
+}
   },
   watch: {
     searchQuery(newVal) {

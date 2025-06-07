@@ -1,80 +1,83 @@
 <template>
-  <div class="positions-management-container">
+  <div class="department-management-container">
     <!-- Header Section -->
     <div class="header-section">
-      <h1 class="page-title">Employee Positions Management</h1>
+      <h1 class="page-title">Department Management</h1>
       <div class="header-actions">
+      <!--Dialog triggar button-->
         <button @click="openDialog" class="btn-primary">
-          <i class="fas fa-plus mr-2"></i> Add Position
+          <i class="fas fa-plus mr-2"></i> Add Department
         </button>
+
+        <!-- Search input -->
         <div class="search-box">
           <i class="fas fa-search search-icon"></i>
           <input 
             type="text" 
             v-model="searchQuery" 
-            placeholder="Search positions..." 
+            placeholder="Search departments..." 
             class="search-input"
           >
         </div>
       </div>
     </div>
 
-    <!-- Positions Table -->
+    <!-- Department Table -->
     <div class="table-container">
-      <table class="positions-table">
+      <table class="department-table">
         <thead>
           <tr>
             <th class="text-left">ID</th>
-            <th class="text-left">Position Name</th>
+            <th class="text-left">Department Name</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(position, index) in filteredPositions" :key="position.id">
-            <td>{{ position.id }}</td>
-            <td>{{ position.position }}</td>
+          <tr v-for="(department, index) in filteredDepartments" :key="department.id">
+            <td>{{ department.id }}</td>
+            <td>{{ department.departmentName }}</td>
             <td class="action-cell">
               <button 
                 class="btn-icon btn-edit"
-                @click="editPosition(index)"
+                @click="editDepartment(index)"
                 title="Edit"
               >
                 <i class="fas fa-edit"></i>
               </button>
               <button 
                 class="btn-icon btn-delete"
-                @click="deletePosition(index)"
+                @click="deleteDepartment(index)"
                 title="Delete"
               >
                 <i class="fas fa-trash-alt"></i>
               </button>
             </td>
           </tr>
-          <tr v-if="filteredPositions.length === 0">
+          <tr v-if="filteredDepartments.length === 0">
             <td colspan="3" class="text-center py-4 text-gray-500">
-              No positions found
+              No departments found
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Position Dialog -->
+    <!-- Department Dialog -->
     <DialogDialog 
       :isOpen="isDialogOpen" 
       @close="closeDialog"
       @confirm="submitForm"
-      :title="editingPosition !== null ? 'Edit Position' : 'Add New Position'"
+      :title="editingDepartment !== null ? 'Edit Department' : 'Add New Department'"
     >
-      <form @submit.prevent="submitForm" class="position-form">
+      <form @submit.prevent="submitForm" class="department-form">
         <div class="form-group">
-          <label>Position Name*</label>
+          <label>Department Name*</label>
           <input 
             type="text" 
-            v-model="positionName" 
+            v-model="departmentName" 
             class="form-input"
             required
-            placeholder="Enter position name"
+            placeholder="Enter department name"
           >
         </div>
       </form>
@@ -91,18 +94,18 @@ export default {
   data() {
     return {
       isDialogOpen: false,
-      editingPosition: null,
+      editingDepartment: null,
       searchQuery: '',
-      positionName: '',
-      positions: []
+      departmentName: '',
+      departments: []
     };
   },
   computed: {
-    filteredPositions() {
-      if (!this.searchQuery) return this.positions;
+    filteredDepartments() {
+      if (!this.searchQuery) return this.departments;
       const query = this.searchQuery.toLowerCase();
-      return this.positions.filter(pos => 
-        pos.position.toLowerCase().includes(query)
+      return this.departments.filter(dept => 
+        dept.departmentName.toLowerCase().includes(query)
       );
     }
   },
@@ -110,68 +113,67 @@ export default {
     openDialog() {
       this.clearForm();
       this.isDialogOpen = true;
-      this.editingPosition = null;
+      this.editingDepartment = null;
     },
     closeDialog() {
       this.isDialogOpen = false;
     },
     clearForm() {
-      this.positionName = '';
+      this.departmentName = '';
     },
     async submitForm() {
-      const positionData = {
-        position: this.positionName
+      const departmentData = {
+        departmentName: this.departmentName
       };
 
       try {
-        if (this.editingPosition !== null) {
-          // Update existing position
-          const id = this.positions[this.editingPosition].id;
-          const response = await axios.put(`http://localhost:8085/api/positions/${id}`, positionData);
-          this.positions.splice(this.editingPosition, 1, response.data);
+        if (this.editingDepartment !== null) {
+          // Update existing department
+          const id = this.departments[this.editingDepartment].id;
+          const response = await axios.put(`http://localhost:8085/api/department/${id}`, departmentData);
+          this.departments.splice(this.editingDepartment, 1, response.data);
         } else {
-          // Add new position
-          const response = await axios.post('http://localhost:8085/api/positions/post', positionData);
-          this.positions.push(response.data);
+          // Add new department
+          const response = await axios.post('http://localhost:8085/api/department/post', departmentData);
+          this.departments.push(response.data);
         }
         this.closeDialog();
-        this.clearForm();
+        this.clearForm()
       } catch (error) {
         alert('Error submitting form: ' + error.message);
       }
     },
-    editPosition(index) {
-      const position = this.positions[index];
-      this.positionName = position.position;
-      this.editingPosition = index;
+    editDepartment(index) {
+      const department = this.departments[index];
+      this.departmentName = department.departmentName;
+      this.editingDepartment = index;
       this.isDialogOpen = true;
     },
-    async deletePosition(index) {
-      if (confirm('Are you sure you want to delete this position?')) {
-        const position = this.positions[index];
+    async deleteDepartment(index) {
+      if (confirm('Are you sure you want to delete this department?')) {
+        const department = this.departments[index];
         try {
-          await axios.delete(`http://localhost:8085/api/positions/${position.id}`);
-          this.positions.splice(index, 1);
+          await axios.delete(`http://localhost:8085/api/department/${department.id}`);
+          this.departments.splice(index, 1);
         } catch (error) {
-          alert('Failed to delete position: ' + error.message);
+          alert('Failed to delete department: ' + error.message);
         }
       }
     }
   },
   async mounted() {
     try {
-      const response = await axios.get('http://localhost:8085/api/positions/get');
-      this.positions = response.data;
+      const response = await axios.get('http://localhost:8085/api/department/department');
+      this.departments = response.data;
     } catch (error) {
-      alert('Failed to fetch positions: ' + error.message);
+      alert('Failed to fetch departments: ' + error.message);
     }
   }
 };
 </script>
 
 <style scoped>
-/* Your existing styles will work fine, just rename department to position where needed */
-.positions-management-container {
+.department-management-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 1.5rem;
@@ -228,12 +230,12 @@ export default {
   background-color: white;
 }
 
-.positions-table {
+.department-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.positions-table th {
+.department-table th {
   background-color: #f7fafc;
   padding: 0.75rem 1rem;
   text-align: left;
@@ -242,13 +244,13 @@ export default {
   border-bottom: 1px solid #e2e8f0;
 }
 
-.positions-table td {
+.department-table td {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e2e8f0;
   vertical-align: middle;
 }
 
-.positions-table tr:hover {
+.department-table tr:hover {
   background-color: #f8fafc;
 }
 
@@ -298,7 +300,7 @@ export default {
   background-color: #fed7d7;
 }
 
-.position-form {
+.department-form {
   padding: 1rem;
 }
 

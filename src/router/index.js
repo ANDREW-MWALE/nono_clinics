@@ -86,10 +86,21 @@ const routes = [
             meta: { title: 'Liquisition' }
           },
           {
+            path: '/departments',
+            component: () => import('@/components/HumanResource/EmployeeDepartment.vue'),
+            meta: { title: 'Department' } 
+          },
+           {
+            path: '/position',
+            component: () => import('@/components/HumanResource/EmployeePositionForm.vue'),
+            meta: { title: 'Position' } 
+          },
+          {
             path: '/staff',
             component: () => import('@/views/StaffComponent.vue'),
             meta: { title: 'Staff' }
           }
+            
         ]
       },
 
