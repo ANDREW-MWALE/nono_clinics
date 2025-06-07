@@ -40,9 +40,9 @@ const routes = [
 
       // Laboratory
       {
-        path: '/laboratory',
+        path: '/Laboratory',
         name: '/Laboratory',
-        component: () => import('@/views/LaboratoryPage.vue'),
+        component: () => import('@/components/Laboratory/LaboratoryPage.vue'),
       },
 
       // Employee Management
