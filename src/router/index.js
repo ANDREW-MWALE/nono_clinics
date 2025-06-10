@@ -1,3 +1,4 @@
+import { component } from '@braid/vue-formulate'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -44,6 +45,16 @@ const routes = [
         name: '/Laboratory',
         component: () => import('@/components/Laboratory/LaboratoryPage.vue'),
       },
+
+      //Radiology
+      {
+        path:'/Radiology',
+        name: 'Radiology',
+        component: () => import('@/components/Radiology/Radiology.vue'),
+
+      },
+      
+
 
       // Employee Management
       {

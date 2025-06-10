@@ -94,8 +94,10 @@ export default {
         { path: '/consultation', text: 'CONSULTATION', image: 'medical-consultation.png', value: '756' },
         { path: '/pharmacy', text: 'PHARMACY', image: 'pharmacy.png', value: '632' },
         { path: '/Laboratory', text: 'LABORATORY', image: 'microscope.png', value: '428' },
-        { path: '/hr-dashboard', text: 'HUMAN RESOURCE', image: 'dashboard.png', value: '58' }
-      ],
+        { path: '/hr-dashboard', text: 'HUMAN RESOURCE', image: 'dashboard.png', value: '58' },
+        { path: '/radiology', text: 'RADIOGRAPHY', image: 'radiography.png', value: '310' },
+    ],
+
       charts: {
         patientChart: null,
         consultationChart: null,

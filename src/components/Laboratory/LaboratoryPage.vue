@@ -1,6 +1,6 @@
 <template>
   <div class="lab-page">
-    <h2 class="section-title">🧪 Add Patient Lab Test Result</h2>
+    <h2 class="section-title">🔬 Add Patient Lab Test Result 🔬</h2>
 
     <div class="form-card">
       <input v-model="newResult.patient" placeholder="Patient Name" />
@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <h3 class="section-title">📄 Lab Test Results</h3>
+    <h3 class="section-title">📋 Lab Test Results</h3>
     <div class="table-wrapper">
       <table>
         <thead>
@@ -69,7 +69,7 @@ export default {
         result: '',
         date: ''
       },
-      testOptions: ['Blood Test', 'Urine Test', 'X-Ray', 'MRI'],
+      testOptions: ['Blood Test', 'Urine Test'],
       labResults: [],
       searchQuery: '',
       editingIndex: null
@@ -85,73 +85,74 @@ export default {
       );
     }
   },
-
+  
   methods: {
-  addResult() {
-    if (
-      !this.newResult.patient ||
-      !this.newResult.test ||
-      !this.newResult.result ||
-      !this.newResult.date
-    ) {
-      alert('Please fill out all fields');
-      return;
+    addResult() {
+      if (
+        !this.newResult.patient ||
+        !this.newResult.test ||
+        !this.newResult.result ||
+        !this.newResult.date
+      ) {
+        alert('Please fill out all fields');
+        return;
+      }
+
+      if (this.editingIndex !== null) {
+        this.labResults.splice(this.editingIndex, 1, { ...this.newResult });
+        this.editingIndex = null;
+      } else {
+        this.labResults.push({ ...this.newResult });
+      }
+
+      this.newResult = { patient: '', test: '', result: '', date: '' };
+    },
+
+    editResult(index) {
+      this.newResult = { ...this.labResults[index] };
+      this.editingIndex = index;
+    },
+
+    deleteResult(index) {
+      if (confirm('Delete this result?')) {
+        this.labResults.splice(index, 1);
+      }
+    },
+
+    exportExcel() {
+      if (this.filteredResults.length === 0) return;
+
+      const worksheet = XLSX.utils.json_to_sheet(this.filteredResults);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Lab Results');
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      saveAs(blob, 'LabResults.xlsx');
+    },
+
+    exportPDF() {
+      if (this.filteredResults.length === 0) return;
+
+      const doc = new jsPDF();
+      const tableColumn = ['Patient', 'Test', 'Result', 'Date'];
+      const tableRows = this.filteredResults.map(result => [
+        result.patient,
+        result.test,
+        result.result,
+        result.date
+      ]);
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+      });
+
+      doc.save('LabResults.pdf');
     }
-
-    if (this.editingIndex !== null) {
-      this.labResults.splice(this.editingIndex, 1, { ...this.newResult });
-      this.editingIndex = null;
-    } else {
-      this.labResults.push({ ...this.newResult });
-    }
-
-    this.newResult = { patient: '', test: '', result: '', date: '' };
-  },
-
-  editResult(index) {
-    this.newResult = { ...this.labResults[index] };
-    this.editingIndex = index;
-  },
-
-  deleteResult(index) {
-    if (confirm('Delete this result?')) {
-      this.labResults.splice(index, 1);
-    }
-  },
-
-  exportExcel() {
-    const data = this.filteredResults.map(r => ({
-      Patient: r.patient,
-      Test: r.test,
-      Result: r.result,
-      Date: r.date
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lab Results');
-
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-
-    saveAs(blob, 'LabTestResults.xlsx');
-  },
-
-  exportPDF() {
-    const doc = new jsPDF();
-
-    autoTable(doc, {
-      head: [['Patient', 'Test', 'Result', 'Date']],
-      body: this.filteredResults.map(r => [r.patient, r.test, r.result, r.date])
-    });
-
-    doc.save('LabTestResults.pdf');
   }
-}
-
-
-}
+};
 </script>
+
 
 <style scoped>
 .lab-page {
