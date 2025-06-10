@@ -363,7 +363,7 @@ export default {
   computed: {
     estimatedNetSalary() {
       const gross = this.formData.basicSalary + this.formData.allowance + this.formData.bonus;
-      const estimatedNhima = gross * 0.01;
+     const estimatedNhima = this.formData.basicSalary * 0.01
       const estimatedNapsa = gross * 0.05;
       const estimatedZra = this.estimatePayee(gross);
       

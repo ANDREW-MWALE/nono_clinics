@@ -1,35 +1,37 @@
 <template>
-  <!-- <custom-navigation/> -->
-  <body>
-    <section class="container">
-      <div class="login-container">
-        <div class="circle circle-one"></div>
+  <section class="container page-background">
+    <div class="login-container">
+      <div class="circle circle-one"></div>
 
-        <div class="form-container">
-          <!-- <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png" alt="illustration" class="illustration" /> -->
-          <h1 class="opacity">LOGIN</h1>
+      <div class="form-container">
+        <img
+          src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png"
+          alt="illustration"
+          class="illustration"
+        />
+        <h1 class="opacity">LOGIN</h1>
 
-          <form @submit.prevent="login">
-            <input v-model="email" type="email" placeholder="EMAIL" />
-            <input v-model="password" type="password" placeholder="PASSWORD" />
-            <button type="submit" class="opacity">SUBMIT</button>
-          </form>
+        <form @submit.prevent="login">
+          <input v-model="email" type="email" placeholder="EMAIL" />
+          <input v-model="password" type="password" placeholder="PASSWORD" />
+          <button type="submit" class="opacity">SUBMIT</button>
+        </form>
 
-          <p v-if="error" class="error">{{ error }}</p>
+        <p v-if="error" class="error">{{ error }}</p>
 
-          <div class="register-forget opacity">
-            <!-- <a href="">REGISTER</a> -->
-            <!-- <a href="" @click="forgotPassword">FORGOT PASSWORD</a> -->
-          </div>
+        <div class="register-forget opacity">
+          <!-- <a href="">REGISTER</a> -->
+          <!-- <a href="" @click="forgotPassword">FORGOT PASSWORD</a> -->
         </div>
-
-        <div class="circle circle-two"></div>
       </div>
 
-      <div class="theme-btn-container"></div>
-    </section>
-  </body>
+      <div class="circle circle-two"></div>
+    </div>
+
+    <div class="theme-btn-container"></div>
+  </section>
 </template>
+
 
 <script>
 //import DashboadComponent from "@/views/DashboadComponent.vue";
@@ -88,6 +90,7 @@ export default {
 
 
 <style scoped>
+
 :root {
     --background: #1a1a2e;
     --color: #ffffff;
@@ -101,8 +104,9 @@ export default {
 html {
     scroll-behavior: smooth;
 }
-
+  
 body {
+   
     margin: 0;
     box-sizing: border-box;
     font-family: "poppins";
@@ -303,6 +307,7 @@ h1 {
         -ms-transform: scale(1);
         -o-transform: scale(1);
     }
+
 }
 
 </style>

@@ -3,13 +3,10 @@
     <!-- Header Section -->
     <div class="header-section">
       <h1 class="page-title">Employee Management</h1>
-      <!-- Button to open the dialog -->
       <div class="header-actions">
         <button @click="openDialog" class="btn-primary">
           <i class="fas fa-user-plus mr-2"></i> Add Employee
         </button>
-
-        <!-- Search input -->
         <div class="search-box">
           <i class="fas fa-search search-icon"></i>
           <input 
@@ -54,7 +51,7 @@
               </div>
             </td>
             <td>
-              <span class="dept-badge" :class="`dept-${(employee.department || '').toLowerCase()}`">
+              <span class="dept-badge" :class="`dept-${(employee.department || '').toLowerCase().replace(' ', '-')}`">
                 {{ employee.department }}
               </span>
             </td>
@@ -75,18 +72,10 @@
               </span>
             </td>
             <td class="action-cell">
-              <button 
-                class="btn-icon btn-edit"
-                @click="editTask(index)"
-                title="Edit"
-              >
+              <button class="btn-icon btn-edit" @click="editTask(index)">
                 <i class="fas fa-edit"></i>
               </button>
-              <button 
-                class="btn-icon btn-delete"
-                @click="deleteTask(index)"
-                title="Delete"
-              >
+              <button class="btn-icon btn-delete" @click="deleteTask(index)">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </td>
@@ -100,7 +89,7 @@
       </table>
     </div>
 
-    <!-- Employee custom Dialog -->
+    <!-- Employee Dialog -->
     <DialogDialog 
       :isOpen="isDialogOpen" 
       @close="closeDialog"
@@ -153,18 +142,20 @@
             >
           </div>
           
-    <div class="form-group">
+          <div class="form-group">
   <label>Department*</label>
- <select v-model="department" class="form-input" required>
-  <option disabled value="">Select Department</option>
-  <option v-for="item in departmentOptions" :key="item.id" :value="item.department">
-    {{ item.department }}
-  </option>
-</select>
+  <select v-model="department" class="form-input" required @focus="loadDepartmentsIfEmpty">
+    <option disabled value="">Select Department</option>
+    <option v-if="isLoadingDepartments" disabled>Loading departments...</option>
+    <option 
+      v-for="dept in departmentList" 
+      :key="dept.id" 
+      :value="dept.departmentName" 
+    >
+      {{ dept.departmentName }}  <!-- Changed this line -->
+    </option>
+  </select>
 </div>
-
-
-          
           <div class="form-group">
             <label>Position*</label>
             <input 
@@ -176,16 +167,19 @@
             >
           </div>
           
-        <div class="form-group">
-  <label>Employee Type*</label>
-  <select v-model="type" class="form-input" required>
-    <option disabled value="">Select Type</option>
-    <option v-for="employee in employee" :key="employee.id" :value="employee.employeeType">
-      {{ employee.employeeType }}
-    </option>
-  </select>
-</div>
-
+          <div class="form-group">
+            <label>Employee Type*</label>
+            <select v-model="type" class="form-input" required>
+              <option disabled value="">Select Type</option>
+              <option 
+                v-for="empType in employeeTypes" 
+                :key="empType.id" 
+                :value="empType.employeeType"
+              >
+                {{ empType.employeeType }}
+              </option>
+            </select>
+          </div>
           
           <div class="form-group">
             <label>Start Date*</label>
@@ -229,26 +223,15 @@
             >
           </div>
           
-          <!-- <div class="form-group">
-            <label>Role*</label>
-            <input 
-              type="text" 
-              v-model="role" 
-              class="form-input"
-              required
-              placeholder="Enter role"
-            >
-          </div>-->
           <div class="form-group"> 
-  <label>Role*</label>
-  <select v-model="role" class="form-input" required>
-    <option disabled value="">Select Role</option>
-    <option v-for="dept in departments" :key="dept.id" :value="dept.department">
-      {{ dept.department }}
-    </option>
-  </select>
-</div>
-
+            <label>Role*</label>
+            <select v-model="role" class="form-input" required>
+              <option disabled value="">Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="manager">Manager</option>
+              <option value="employee">Employee</option>
+            </select>
+          </div>
         </div>
       </form>
     </DialogDialog>
@@ -266,7 +249,8 @@ export default {
       isDialogOpen: false,
       editingEmployee: null,
       searchQuery: '',
-
+      isLoadingDepartments: false,
+      
       // Form fields
       employeeName: '',
       email: '',
@@ -280,59 +264,78 @@ export default {
       password: '',
       confirmPassword: '',
       role: '',
-    
-     // renamed to avoid conflict
-    departmentOptions: [ 
-      { id: 1, department: "Human Resource" },
-      { id: 2, department: "ICT" }
-    ],
-      departments: [ // This array will be used to populate the dropdown
-      { id: 1, department: "Human Resource" },
-      { id: 2, department: "ICT" }
-    ],
-
-     employee: [{
-        id: 1,  employeeType: "permanent"
-     },
-     {
-        id: 2, employeeType: "contractual"
-     },
-      {
-        id: 3, employeeType: "part-time"
-     }
-
-
-     ],
-      // Employees fetched from backend
+      
+      // Data lists
+      departmentList: [],
+      employeeTypes: [
+        { id: 1, employeeType: "permanent" },
+        { id: 2, employeeType: "contractual" },
+        { id: 3, employeeType: "part-time" }
+      ],
+      
+      // Employees data
       employees: []
     };
   },
   computed: {
     filteredEmployees() {
       if (!this.searchQuery) return this.employees;
-
       const query = this.searchQuery.toLowerCase();
       return this.employees.filter(employee => 
-        employee.employeeName.toLowerCase().includes(query) ||
-        employee.email.toLowerCase().includes(query) ||
-        employee.contact.toLowerCase().includes(query) ||
-        employee.department.toLowerCase().includes(query) ||
-        employee.position.toLowerCase().includes(query)
-      );
+        (employee.employeeName?.toLowerCase().includes(query) ||
+        employee.email?.toLowerCase().includes(query) ||
+        employee.contact?.toLowerCase().includes(query) ||
+        employee.department?.toLowerCase().includes(query) ||
+        employee.position?.toLowerCase().includes(query)))
     }
   },
   methods: {
+    async loadDepartmentsIfEmpty() {
+      if (this.departmentList.length === 0) {
+        await this.departmentOptions();
+      }
+    },
+    
+    async departmentOptions() {
+  this.isLoadingDepartments = true;
+  try {
+    const response = await axios.get(`http://localhost:8085/api/department/department`);
+    
+    // Directly use the array response
+    this.departmentList = response.data;
+    
+    if (this.departmentList.length === 0) {
+      console.warn("No departments found, using fallback");
+      this.useFallbackDepartments();
+    }
+  } catch (error) {
+    console.error("Department fetch error:", error);
+    this.useFallbackDepartments();
+  } finally {
+    this.isLoadingDepartments = false;
+  }
+},
+
+useFallbackDepartments() {
+  this.departmentList = [
+    { id: 1, departmentName: "IT Department" },
+    { id: 2, departmentName: "Human Resource" },
+    { id: 3, departmentName: "Finance" }
+  ];
+},
     openDialog() {
-       console.log('Open dialog clicked');
+      console.log('Open dialog clicked');
       this.clearForm();
       this.isDialogOpen = true;
       this.editingEmployee = null;
     },
+    
     closeDialog() {
       this.isDialogOpen = false;
     },
+    
     clearForm() {
-    this.employeeName = '';
+      this.employeeName = '';
       this.email = '';
       this.address = '';
       this.contact = '';
@@ -345,17 +348,19 @@ export default {
       this.confirmPassword = '';
       this.role = '';
     },
+    
     formatDate(date) {
       if (!date) return '';
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
       return new Date(date).toLocaleDateString(undefined, options);
     },
+    
     formatEmployeeType(type) {
       if (!type) return '';
       return type.charAt(0).toUpperCase() + type.slice(1);
     },
+    
     async submitForm() {
-      // Basic validation for passwords
       if (this.password !== this.confirmPassword) {
         alert('Passwords do not match.');
         return;
@@ -377,12 +382,10 @@ export default {
 
       try {
         if (this.editingEmployee !== null) {
-          // Update existing employee
           const id = this.employees[this.editingEmployee].id;
           const response = await axios.put(`http://localhost:8085/api/auth/${id}`, newEmployee);
           this.employees.splice(this.editingEmployee, 1, response.data);
         } else {
-          // Add new employee
           const response = await axios.post('http://localhost:8085/api/auth/register', newEmployee);
           this.employees.push(response.data);
         }
@@ -392,9 +395,10 @@ export default {
         alert('Error submitting form: ' + error.message);
       }
     },
+    
     editTask(index) {
       const employee = this.employees[index];
-     this.employeeName =employee.employeeName;
+      this.employeeName = employee.employeeName;
       this.email = employee.email;
       this.address = employee.address;
       this.contact = employee.contact;
@@ -404,17 +408,17 @@ export default {
       this.startDate = employee.startDate;
       this.endDate = employee.endDate;
       this.role = employee.role || '';
-      // Do not load password for security reasons
       this.password = '';
       this.confirmPassword = '';
 
       this.editingEmployee = index;
       this.isDialogOpen = true;
     },
+    
     deleteTask(index) {
       if (confirm('Are you sure you want to delete this employee?')) {
         const employee = this.employees[index];
-        axios.delete(`http://localhost:8085//api/auth/${employee.id}`)
+        axios.delete(`http://localhost:8085/api/auth/${employee.id}`)
           .then(() => {
             this.employees.splice(index, 1);
           })
@@ -424,15 +428,19 @@ export default {
   },
   async mounted() {
     try {
-      const response = await axios.get('http://localhost:8085/api/auth/register');
-      this.employees = response.data;
+      // Load employees
+      const empResponse = await axios.get('http://localhost:8085/api/auth/register');
+      this.employees = empResponse.data;
+      console.log("Employees loaded:", this.employees);
+      
+      // Preload departments
+      await this.departmentOptions();
     } catch (error) {
-      alert('Failed to fetch employees: ' + error.message);
+      console.error('Failed to initialize data:', error);
     }
   }
-};
+}
 </script>
-
 <style scoped>
 /* Main Container */
 .employee-management-container {
@@ -733,5 +741,15 @@ export default {
     display: block;
     overflow-x: auto;
   }
+  select.form-input {
+  appearance: menuList;
+  height: auto;
+  padding: 0.5rem;
+  background-color: white;
+}
+/* Style for dropdown options */
+select.form-input option {
+  padding: 0.5rem;
+}
 }
 </style>
