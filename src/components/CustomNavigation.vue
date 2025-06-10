@@ -35,33 +35,33 @@ export default {
     return {
       navLinks: [
         { path: '/dashboard', icon: 'fas fa-tachometer-alt', text: 'Dashboard' },
+        // Add more links as needed
         // { path: '/staff', icon: 'fas fa-users', text: 'Staff' },
-        // { path: '/locations', icon: 'fas fa-map-marker-alt', text: 'Locations' },
-        // { path: '/prescription', icon: 'fas fa-prescription', text: 'Prescription' },
-        // { path: '/medicine-form', icon: 'fas fa-pills', text: 'Medicine' },
-        // { path: '/service-form', icon: 'fas fa-concierge-bell', text: 'Services' }
       ],
-      employeeName: '' // initially empty
+      employeeName: 'Guest' // Default value
     }
   },
   mounted() {
-  const user = localStorage.getItem("user");
-  if (user) {
-    try {
-      this.employeeName = JSON.parse(user).name || "Unknown";
-    } catch {
-      this.employeeName = "Unknown";
-    }
-  } else {
-    this.employeeName = "Guest";
-  }
-},
-
+    this.updateEmployeeName();
+  },
   methods: {
+    updateEmployeeName() {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          // Check multiple possible name fields
+          this.employeeName = user.employeeName || user.fullName || user.username || user.email || "Unknown";
+        } catch (e) {
+          console.error("Failed to parse user data:", e);
+          this.employeeName = "Unknown";
+        }
+      }
+    },
     handleLogout() {
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      this.$router.push('/login')
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      this.$router.push('/login');
     }
   }
 }

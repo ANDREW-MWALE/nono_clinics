@@ -20,6 +20,7 @@
         <p v-if="error" class="error">{{ error }}</p>
 
         <div class="register-forget opacity">
+          <!-- Optional links -->
           <!-- <a href="">REGISTER</a> -->
           <!-- <a href="" @click="forgotPassword">FORGOT PASSWORD</a> -->
         </div>
@@ -32,15 +33,10 @@
   </section>
 </template>
 
-
 <script>
-//import DashboadComponent from "@/views/DashboadComponent.vue";
 import axios from "axios";
-//import CustomNavigation from './CustomNavigation.vue';
-
 
 export default {
- // components: { CustomNavigation },
   data() {
     return {
       email: "",
@@ -49,42 +45,43 @@ export default {
     };
   },
   methods: {
- async login() {
-  this.error = null;
+    async login() {
+      this.error = null;
 
-  try {
-    const response = await axios.post("http://localhost:8085/api/auth/login", {
-      email: this.email,
-      password: this.password,
-    });
+      try {
+        const response = await axios.post("http://localhost:8085/api/auth/login", {
+          email: this.email,
+          password: this.password,
+        });
 
-    // Save token
-    localStorage.setItem("authToken", response.data.token);
+        console.log("Login response:", response.data); // Debugging
 
-    // ✅ Save user info (like name) if present
-    localStorage.setItem("user", JSON.stringify(response.data.user));
+        // Save token and user data
+        localStorage.setItem("authToken", response.data.token);
+        
+        if (response.data.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        } else {
+          console.warn("No user data in login response");
+        }
 
-    // Success message
-    alert(response.data.message || "Login successful!");
+        alert(response.data.message || "Login successful!");
+        this.$router.push("/dashboard");
 
-    // Redirect
-    this.$router.push("/dashboard");
-
-  } catch (error) {
-    if (error.response) {
-      this.error =
-        error.response.status === 401
-          ? "Invalid email or password"
-          : error.response.data.message || "Login failed.";
-    } else if (error.request) {
-      this.error = "Network error. Please check your connection.";
-    } else {
-      this.error = "An unexpected error occurred.";
+      } catch (error) {
+        if (error.response) {
+          this.error =
+            error.response.status === 401
+              ? "Invalid email or password"
+              : error.response.data.message || "Login failed.";
+        } else if (error.request) {
+          this.error = "Network error. Please check your connection.";
+        } else {
+          this.error = "An unexpected error occurred.";
+        }
+      }
     }
   }
-}
-
-},
 };
 </script>
 
