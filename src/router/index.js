@@ -192,7 +192,8 @@ const routes = [
             path: '/reports',
             component: () => import('@/components/pharmacy/PharmacyReports.vue'),
             meta: { title: 'Pharmacy Reports' }
-          }
+          },
+          
         ]
       },
 
