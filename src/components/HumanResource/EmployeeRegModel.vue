@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="modal-overlay" @click.self="close">
       <div class="modal-content">
         <div class="modal-header">
@@ -238,4 +238,4 @@
     background: #00829f;
     color: white;
   }
-  </style>
+  </style> -->

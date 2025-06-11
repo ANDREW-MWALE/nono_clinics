@@ -91,6 +91,11 @@ const routes = [
             component: () => import('@/components/HumanResource/Appraisal.vue'),
             meta: { title: 'Appraisal' }
           },
+             {
+            path: '/payroll-report',
+            component: () => import('@/components/HumanResource/PayrollReport.vue'),
+            meta: { title: 'PayrollReport' }
+          },
           {
             path: '/liquisition',
             component: () => import('@/components/HumanResource/Liquisition.vue'),
