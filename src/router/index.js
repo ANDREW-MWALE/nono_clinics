@@ -1,3 +1,4 @@
+import { component } from '@braid/vue-formulate'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -40,10 +41,20 @@ const routes = [
 
       // Laboratory
       {
-        path: '/laboratory',
+        path: '/Laboratory',
         name: '/Laboratory',
-        component: () => import('@/views/LaboratoryPage.vue'),
+        component: () => import('@/components/Laboratory/LaboratoryPage.vue'),
       },
+
+      //Radiology
+      {
+        path:'/Radiology',
+        name: 'Radiology',
+        component: () => import('@/components/Radiology/Radiology.vue'),
+
+      },
+      
+
 
       // Employee Management
       {
@@ -86,21 +97,10 @@ const routes = [
             meta: { title: 'Liquisition' }
           },
           {
-            path: '/departments',
-            component: () => import('@/components/HumanResource/EmployeeDepartment.vue'),
-            meta: { title: 'Department' } 
-          },
-           {
-            path: '/position',
-            component: () => import('@/components/HumanResource/EmployeePositionForm.vue'),
-            meta: { title: 'Position' } 
-          },
-          {
             path: '/staff',
             component: () => import('@/views/StaffComponent.vue'),
             meta: { title: 'Staff' }
           }
-            
         ]
       },
 
