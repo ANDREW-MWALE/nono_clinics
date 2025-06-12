@@ -36,13 +36,9 @@ export default {
       navLinks: [
         { path: '/dashboard', icon: 'fas fa-tachometer-alt', text: 'Dashboard' },
         // Add more links as needed
-        // { path: '/staff', icon: 'fas fa-users', text: 'Staff' },
       ],
-      employeeName: 'Guest' // Default value
-    }
-  },
-  mounted() {
-    this.updateEmployeeName();
+      employeeName: 'Guest'
+    };
   },
   methods: {
     updateEmployeeName() {
@@ -50,12 +46,13 @@ export default {
       if (userData) {
         try {
           const user = JSON.parse(userData);
-          // Check multiple possible name fields
-          this.employeeName = user.employeeName || user.fullName || user.username || user.email || "Unknown";
+          this.employeeName = user.employeeName || "Guest";
         } catch (e) {
           console.error("Failed to parse user data:", e);
-          this.employeeName = "Unknown";
+          this.employeeName = "Guest";
         }
+      } else {
+        this.employeeName = "Guest";
       }
     },
     handleLogout() {
@@ -63,8 +60,20 @@ export default {
       localStorage.removeItem('user');
       this.$router.push('/login');
     }
+  },
+  created() {
+    this.updateEmployeeName();
+    window.addEventListener('storage', this.updateEmployeeName);
+  },
+  beforeDestroy() {
+    window.removeEventListener('storage', this.updateEmployeeName);
+  },
+  watch: {
+    '$route'() {
+      this.updateEmployeeName();
+    }
   }
-}
+};
 </script>
 
 

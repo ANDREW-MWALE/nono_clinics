@@ -54,20 +54,17 @@ export default {
           password: this.password,
         });
 
-        console.log("Login response:", response.data); // Debugging
+        console.log("Login response:", response.data);
 
-        // Save token and user data
-        localStorage.setItem("authToken", response.data.token);
-        
-        if (response.data.user) {
+        if (response.data && response.data.user) {
+          localStorage.setItem("authToken", response.data.token || '');
           localStorage.setItem("user", JSON.stringify(response.data.user));
+          
+          alert(response.data.message || "Login successful!");
+          this.$router.push("/dashboard");
         } else {
-          console.warn("No user data in login response");
+          this.error = "Unexpected response from server";
         }
-
-        alert(response.data.message || "Login successful!");
-        this.$router.push("/dashboard");
-
       } catch (error) {
         if (error.response) {
           this.error =

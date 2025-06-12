@@ -103,6 +103,7 @@ export default {
       }
     },
     async fetchPayrollData() {
+        
       // Simulated data fetching logic
       const data = [
         { name: 'John Doe', department: 'Engineering', hours: 160, pay: 5000 },
