@@ -180,7 +180,11 @@
       <div class="payslip-header">
         <div class="company-info">
           <div class="company-logo">
-            div class
+             <img 
+            :src="company.logo" 
+            :alt="company.name + ' logo'"
+            class="company-logo"
+            >
             <h1>{{ company.name }}</h1>
             <div class="company-address">
               {{ company.address }}<br>
@@ -345,12 +349,13 @@ export default {
       isLoading: false,
       error: null,
       company: {
-        name: 'XYZ COMPANY LIMITED',
-        address: '123 Business Park, Lusaka',
-        city: 'Lusaka',
+        logo: require('@/assets/LOGO.jpg'),
+        name: 'Royal Palms Hospital',
+        address: 'P.o Box 31758',
+        city: 'Lusaka West',
         country: 'Zambia',
-        phone: '+260 211 123456',
-        email: 'accounts@xyzcompany.co.zm',
+        phone: '+0211 355686',
+        email: 'royalpalmshospital@gmail.com',
         taxId: 'TPIN-123456789'
       },
       currentDate: new Date().toLocaleDateString('en-GB', {

@@ -1,11 +1,10 @@
-import { component } from '@braid/vue-formulate'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   // Auth Routes (no layout)
   { 
     path: '/', 
-    redirect: '/login' 
+    redirect: () => localStorage.getItem('authToken') ? '/dashboard' : '/login'
   },
   { 
     path: '/login', 
@@ -25,6 +24,15 @@ const routes = [
       title: 'Register'
     } 
   },
+  {
+    path: '/unauthorized',
+    component: () => import('@/views/Unauthorized.vue'),
+    meta: {
+      noLayout: true,
+      title: 'Unauthorized',
+      requiresAuth: false
+    }
+  },
 
   // Main Layout Wrapper (all routes here require auth)
   {
@@ -42,19 +50,16 @@ const routes = [
       // Laboratory
       {
         path: '/Laboratory',
-        name: '/Laboratory',
+        name: 'Laboratory',
         component: () => import('@/components/Laboratory/LaboratoryPage.vue'),
       },
 
-      //Radiology
+      // Radiology
       {
         path:'/Radiology',
         name: 'Radiology',
         component: () => import('@/components/Radiology/Radiology.vue'),
-
       },
-      
-
 
       // Employee Management
       {
@@ -91,7 +96,7 @@ const routes = [
             component: () => import('@/components/HumanResource/Appraisal.vue'),
             meta: { title: 'Appraisal' }
           },
-             {
+          {
             path: '/payroll-report',
             component: () => import('@/components/HumanResource/PayrollReport.vue'),
             meta: { title: 'PayrollReport' }
@@ -101,6 +106,11 @@ const routes = [
             component: () => import('@/components/HumanResource/Liquisition.vue'),
             meta: { title: 'Liquisition' }
           },
+           { 
+        path: '/departments', 
+        component: () => import('@/components/HumanResource/EmployeeDepartment.vue'),
+        meta: { title: 'Departments' } 
+      },
           {
             path: '/staff',
             component: () => import('@/views/StaffComponent.vue'),
@@ -166,17 +176,17 @@ const routes = [
         component: () => import('@/views/RadiologyTestForm.vue'),
         meta: { title: 'Radiology' } 
       },
+        { 
+        path: '/unauthorised', 
+        component: () => import('@/components/Unauthorized.vue'),
+        meta: { title: 'unauthorised' } 
+      },
 
       // Administration
       { 
         path: '/locations', 
         component: () => import('@/views/LocationsComponent.vue'),
         meta: { title: 'Locations' } 
-      },
-      { 
-        path: '/hospital-department', 
-        component: () => import('@/views/HospitalDepartments.vue'),
-        meta: { title: 'Departments' } 
       },
       { 
         path: '/payment-category', 
@@ -187,6 +197,11 @@ const routes = [
         path: '/consultation-type', 
         component: () => import('@/views/ConsultationType.vue'),
         meta: { title: 'Consultation Types' } 
+      },
+      { 
+        path: '/access', 
+        component: () => import('@/components/HumanResource/DepartmentPermissions.vue'),
+        meta: { title: 'Dept Permission' } 
       },
 
       // Billing
@@ -281,41 +296,56 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { top: 0 }
-    }
+    return savedPosition || { top: 0 }
   }
 })
 
-// Authentication guard
+// Public routes that don't require auth
+const publicRoutes = ['/login', '/register', '/unauthorized']
+
 router.beforeEach((to, from, next) => {
-  // Set document title
-  document.title = to.meta.title 
-    ? `${to.meta.title} | nono_clinics` 
-    : 'nono_clinics'
+  // Set document title and layout
+  document.title = to.meta?.title ? `${to.meta.title} | nono_clinics` : 'nono_clinics'
+  document.body.classList.toggle('no-layout', !!to.meta?.noLayout)
 
-  // Set layout class
-  document.body.classList.toggle('no-layout', to.meta.noLayout || false)
-
-  // Check authentication
-  const isAuthenticated = localStorage.getItem('authToken')
-  
-  // Redirect to login if route requires auth and user is not authenticated
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return next({
-      path: '/login',
-      query: { redirect: to.fullPath }
-    })
+  // Skip auth check for public routes
+  if (publicRoutes.includes(to.path)) {
+    return next()
   }
 
-  // Redirect to dashboard if user is authenticated and tries to access login/register
-  if ((to.path === '/login' || to.path === '/register') && isAuthenticated) {
+  // Check authentication
+  const isAuthenticated = !!localStorage.getItem('authToken')
+  if (!isAuthenticated) {
+    return next({ path: '/login', query: { redirect: to.fullPath } })
+  }
+
+  // Redirect if authenticated user tries to access auth pages
+  if (['/login', '/register'].includes(to.path)) {
     return next('/dashboard')
   }
 
-  next()
+  // Check permissions
+  const isAdmin = localStorage.getItem('isAdmin') === 'true'
+  const userPermissions = JSON.parse(localStorage.getItem('userPermissions') || [])
+  
+  const hasAccess = isAdmin || 
+                   userPermissions.includes('*') ||
+                   userPermissions.includes(to.path) ||
+                   checkNestedAccess(to.path, userPermissions)
+
+  console.log(`Navigation to ${to.path}`, {
+    isAdmin,
+    permissions: userPermissions,
+    hasAccess
+  })
+
+  hasAccess ? next() : next('/unauthorized')
 })
+
+function checkNestedAccess(path, permissions) {
+  return permissions.some(perm => 
+    perm.endsWith('/*') && path.startsWith(perm.slice(0, -2))
+  )
+}
 
 export default router

@@ -57,9 +57,23 @@ export default {
         console.log("Login response:", response.data);
 
         if (response.data && response.data.user) {
+          // Store authentication data
           localStorage.setItem("authToken", response.data.token || '');
           localStorage.setItem("user", JSON.stringify(response.data.user));
           
+          // Store department permissions if available
+          if (response.data.department) {
+            localStorage.setItem("departmentId", response.data.department.id);
+            localStorage.setItem(
+              "userPermissions", 
+              JSON.stringify(response.data.department.allowedRoutes || [])
+            );
+            localStorage.setItem(
+              "isAdmin", 
+              response.data.user.role === 'ADMIN' ? 'true' : 'false'
+            );
+          }
+
           alert(response.data.message || "Login successful!");
           this.$router.push("/dashboard");
         } else {
